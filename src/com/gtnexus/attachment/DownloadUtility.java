@@ -1,4 +1,4 @@
-package com.gtnexus;
+package com.gtnexus.attachment;
 
 import java.io.BufferedReader;
 import java.io.FileOutputStream;
@@ -12,7 +12,7 @@ import java.net.URL;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class OrderAttachmentsDownloadUtility {
+public class DownloadUtility {
     // Version of API
     private final static String version = "310";
     // URL of Environment

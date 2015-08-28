@@ -1,4 +1,4 @@
-package com.gtnexus;
+package com.gtnexus.attachment;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -10,7 +10,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class OrderAttachmentUploadUtility {
+public class UploadUtility {
     // Version of API
     final static String version = "310";
     // URL of Environment
