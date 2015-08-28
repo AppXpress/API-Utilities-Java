@@ -23,13 +23,20 @@ public class DownloadUtility {
     private static String dataKey;
 
     public static void main(String[] args) {
-        // Retrieve the authorization token, data key and order folder's uid from arguments.
+        if (args.length != 4) {
+            System.out.println("The program accepts four arguments: " +
+                "authorization token, data key, global object type, and object folder uid.");
+            return;
+        }
+
+        // Retrieve the authorization token, data key, global object type, and object folder uid from arguments.
         authorization = args[0];
         dataKey = args[1];
-        String orderUid = args[2];
+        String globalObjectType = args[2];
+        String folderUid = args[3];
 
         // Step 1 - Get the attachment list of the order.
-        JSONArray attachmentList = getAttachmentList(orderUid);
+        JSONArray attachmentList = getAttachmentList(globalObjectType, folderUid);
 
         // Step 2 - Download each attachment file.
         for (int i = 0; i < attachmentList.length(); i++) {
@@ -40,9 +47,9 @@ public class DownloadUtility {
         }
     }
 
-    public static JSONArray getAttachmentList(String orderUid) {
+    public static JSONArray getAttachmentList(String globalObjectType, String folderUid) {
         try {
-            String urlString = baseURL + "/OrderDetail/" + orderUid + "/attachment" +
+            String urlString = baseURL + "/" + globalObjectType + "/" + folderUid + "/attachment" +
                     "?dataKey=" + dataKey;
             URL url = new URL(urlString);
 

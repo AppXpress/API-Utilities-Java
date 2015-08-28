@@ -21,19 +21,26 @@ public class UploadUtility {
     private static String dataKey;
 
     public static void main(String[] args) {
-        // Retrieve the authorization token, data key, order folder's uid
+        if (args.length != 5) {
+            System.out.println("The program accepts five arguments: " +
+                "authorization token, data key, global object type, object folder uid, and attachment file name.");
+            return;
+        }
+
+        // Retrieve the authorization token, data key, global object type, object folder uid
         // and attachment file name from arguments.
         authorization = args[0];
         dataKey = args[1];
-        String orderUid = args[2];
-        String filename = args[3];
-        uploadAttachment(orderUid, filename);
+        String globalObjectType = args[2];
+        String folderUid = args[3];
+        String filename = args[4];
+        uploadAttachment(globalObjectType, folderUid, filename);
     }
 
-    private static void uploadAttachment(String orderUid, String filename)
+    private static void uploadAttachment(String globalObjectType, String folderUid, String filename)
     {
         try {
-            String urlString = baseURL + "/OrderDetail/" + orderUid + "/attach?dataKey=" + dataKey;
+            String urlString = baseURL + "/" + globalObjectType + "/" + folderUid + "/attach?dataKey=" + dataKey;
             URL url = new URL(urlString);
 
             // Open a HTTP connection to the URL
@@ -51,8 +58,7 @@ public class UploadUtility {
             conn.setRequestProperty("Connection", "Keep-Alive");
             conn.setRequestProperty("Authorization", authorization);
             conn.setRequestProperty("Content-Type", "application/json");
-            conn.setRequestProperty("Content-Disposition",
-                    "attachment;filename=\"" + filename + "\"");
+            conn.setRequestProperty("Content-Disposition", "attachment;filename=\"" + filename + "\"");
 
             // Send the file content to the output stream.
             DataOutputStream dataOutputStream = new DataOutputStream(conn.getOutputStream());
