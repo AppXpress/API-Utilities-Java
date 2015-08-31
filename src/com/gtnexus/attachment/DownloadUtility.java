@@ -10,6 +10,7 @@ import java.net.URL;
 
 // JSON library from https://github.com/douglascrockford/JSON-java
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class DownloadUtility {
@@ -38,13 +39,18 @@ public class DownloadUtility {
         // Step 1 - Get the attachment list of the order.
         JSONArray attachmentList = getAttachmentList(globalObjectType, folderUid);
 
-        // Step 2 - Download each attachment file.
-        for (int i = 0; i < attachmentList.length(); i++) {
-            JSONObject attachment = attachmentList.getJSONObject(i);
-            String attachmentUid = attachment.getString("attachmentUid");
-            String filename = attachment.getString("name");
-            downloadAttachment(attachmentUid, filename);
+		try {
+			// Step 2 - Download each attachment file.
+			for (int i = 0; i < attachmentList.length(); i++) {
+				JSONObject attachment = attachmentList.getJSONObject(i);
+				String attachmentUid = attachment.getString("attachmentUid");
+				String filename = attachment.getString("name");
+				downloadAttachment(attachmentUid, filename);
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
         }
+
     }
 
     public static JSONArray getAttachmentList(String globalObjectType, String folderUid) {
