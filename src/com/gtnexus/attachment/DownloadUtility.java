@@ -26,11 +26,13 @@ public class DownloadUtility {
     public static void main(String[] args) {
         if (args.length != 4) {
             System.out.println("The program accepts four arguments: " +
-                "authorization token, data key, global object type, and object folder uid.");
+                "authorization token, data key, global object type, " +
+                "and object folder uid.");
             return;
         }
 
-        // Retrieve the authorization token, data key, global object type, and object folder uid from arguments.
+        // Retrieve the authorization token, data key, global object type,
+        // and object folder uid from arguments.
         authorization = args[0];
         dataKey = args[1];
         String globalObjectType = args[2];
@@ -55,8 +57,8 @@ public class DownloadUtility {
 
     public static JSONArray getAttachmentList(String globalObjectType, String folderUid) {
         try {
-            String urlString = baseURL + "/" + globalObjectType + "/" + folderUid + "/attachment" +
-                    "?dataKey=" + dataKey;
+            String urlString = baseURL + "/" + globalObjectType + "/" + folderUid +
+                "/attachment?dataKey=" + dataKey;
             URL url = new URL(urlString);
 
             // Set up the HTTP GET request.
@@ -69,7 +71,7 @@ public class DownloadUtility {
             int responseCode = conn.getResponseCode();
             if (responseCode == 200) {
                 BufferedReader responseBuffer =
-                        new BufferedReader(new InputStreamReader((conn.getInputStream())));
+                    new BufferedReader(new InputStreamReader((conn.getInputStream())));
                 StringBuilder responseStrBuilder = new StringBuilder();
                 String inputStr;
                 while ((inputStr = responseBuffer.readLine()) != null) {
@@ -94,8 +96,8 @@ public class DownloadUtility {
 
     public static void downloadAttachment(String attachmentUid, String filename) {
         try {
-            String urlString =  baseURL + "/media/" + attachmentUid +
-                    "?dataKey=" + dataKey;
+            String urlString =  baseURL + "/media/" + attachmentUid
+                + "?dataKey=" + dataKey;
             URL url = new URL(urlString);
 
             // Set up the HTTP GET request.

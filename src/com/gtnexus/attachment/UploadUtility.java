@@ -27,12 +27,14 @@ public class UploadUtility {
     public static void main(String[] args) {
         if (args.length != 5) {
             System.out.println("The program accepts five arguments: " +
-                "authorization token, data key, global object type, object folder uid, and attachment file name.");
+                "authorization token, data key, global object type, " +
+                "object folder uid, and attachment file name.");
             return;
         }
 
-        // Retrieve the authorization token, data key, global object type, object folder uid
-        // and attachment file name from arguments. The attachment file should reside in the working directory.
+        // Retrieve the authorization token, data key, global object type,
+        // object folder uid and attachment file name from arguments.
+        // The attachment file should reside in the current working directory.
         authorization = args[0];
         dataKey = args[1];
         String globalObjectType = args[2];
@@ -41,13 +43,15 @@ public class UploadUtility {
         uploadAttachment(globalObjectType, folderUid, filename);
     }
 
-    private static void uploadAttachment(String globalObjectType, String folderUid, String filename)
-    {
+    private static void uploadAttachment(
+        String globalObjectType, String folderUid, String filename) {
+
         try {
-            String urlString = baseURL + "/" + globalObjectType + "/" + folderUid + "/attach?dataKey=" + dataKey;
+            String urlString = baseURL + "/" + globalObjectType + "/" + folderUid
+                + "/attach?dataKey=" + dataKey;
             URL url = new URL(urlString);
 
-            // creates a unique boundary string based on time stamp
+            // Create a unique boundary string based on time stamp.
             String boundary = "===" + System.currentTimeMillis() + "===";
 
             // Open a HTTP connection to the URL
@@ -64,9 +68,10 @@ public class UploadUtility {
 
             conn.setRequestProperty("Connection", "Keep-Alive");
             conn.setRequestProperty("Authorization", authorization);
-            conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
+            conn.setRequestProperty("Content-Type", "multipart/form-data; "
+                + "boundary=" + boundary);
 
-            // Send the file content to the output stream.
+            // Create a multipart/form-data POST request.
             OutputStream outputStream = conn.getOutputStream();
             DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
             File file = new File(filename);
@@ -74,9 +79,17 @@ public class UploadUtility {
             dataOutputStream.writeBytes("--");
             dataOutputStream.writeBytes(boundary);
             dataOutputStream.writeBytes("\r\n");
-            // Because the API doesn't care about the field name, so name=fieldName is omitted from the following header.
-            dataOutputStream.writeBytes("Content-Disposition: form-data; filename=\"" + filename + "\"\r\n");
-            dataOutputStream.writeBytes("Content-Type: " + URLConnection.guessContentTypeFromName(filename) + "; charset=utf-8\r\n");
+            // Because the API will accept any field name for the file,
+            // so name={fieldName} is omitted from the Content-Disposition header.
+            // Only the filename={filename} is specified.
+            dataOutputStream.writeBytes("Content-Disposition: form-data; "
+                + "filename=\"" + filename + "\"\r\n");
+            // The Content-Type can be the generic application/octet-stream
+            // or a more specific type dynamically determined by calling
+            // URLConnection.guessContentTypeFromName(filename).
+            dataOutputStream.writeBytes("Content-Type: "
+                + URLConnection.guessContentTypeFromName(filename) + "; "
+                + "charset=utf-8\r\n");
             dataOutputStream.writeBytes("\r\n");
             dataOutputStream.write(Files.readAllBytes(file.toPath()));
             dataOutputStream.writeBytes("\r\n");
