@@ -79,17 +79,20 @@ public class UploadUtility {
             dataOutputStream.writeBytes("--");
             dataOutputStream.writeBytes(boundary);
             dataOutputStream.writeBytes("\r\n");
+
             // Because the API will accept any field name for the file,
             // so name={fieldName} is omitted from the Content-Disposition header.
             // Only the filename={filename} is specified.
             dataOutputStream.writeBytes("Content-Disposition: form-data; "
                 + "filename=\"" + filename + "\"\r\n");
+
             // The Content-Type can be the generic application/octet-stream
             // or a more specific type dynamically determined by calling
             // URLConnection.guessContentTypeFromName(filename).
             dataOutputStream.writeBytes("Content-Type: "
                 + URLConnection.guessContentTypeFromName(filename) + "; "
                 + "charset=utf-8\r\n");
+
             dataOutputStream.writeBytes("\r\n");
             dataOutputStream.write(Files.readAllBytes(file.toPath()));
             dataOutputStream.writeBytes("\r\n");
