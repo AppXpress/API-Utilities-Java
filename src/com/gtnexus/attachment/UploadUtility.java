@@ -4,9 +4,13 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URLConnection;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -28,7 +32,7 @@ public class UploadUtility {
         }
 
         // Retrieve the authorization token, data key, global object type, object folder uid
-        // and attachment file name from arguments.
+        // and attachment file name from arguments. The attachment file should reside in the working directory.
         authorization = args[0];
         dataKey = args[1];
         String globalObjectType = args[2];
@@ -42,6 +46,9 @@ public class UploadUtility {
         try {
             String urlString = baseURL + "/" + globalObjectType + "/" + folderUid + "/attach?dataKey=" + dataKey;
             URL url = new URL(urlString);
+
+            // creates a unique boundary string based on time stamp
+            String boundary = "===" + System.currentTimeMillis() + "===";
 
             // Open a HTTP connection to the URL
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -57,13 +64,23 @@ public class UploadUtility {
 
             conn.setRequestProperty("Connection", "Keep-Alive");
             conn.setRequestProperty("Authorization", authorization);
-            conn.setRequestProperty("Content-Type", "application/json");
-            conn.setRequestProperty("Content-Disposition", "attachment;filename=\"" + filename + "\"");
+            conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
 
             // Send the file content to the output stream.
-            DataOutputStream dataOutputStream = new DataOutputStream(conn.getOutputStream());
+            OutputStream outputStream = conn.getOutputStream();
+            DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
             File file = new File(filename);
-            Files.copy(file.toPath(), dataOutputStream);
+
+            dataOutputStream.writeBytes("--");
+            dataOutputStream.writeBytes(boundary);
+            dataOutputStream.writeBytes("\r\n");
+            // Because the API doesn't care about the field name, so name=fieldName is omitted from the following header.
+            dataOutputStream.writeBytes("Content-Disposition: form-data; filename=\"" + filename + "\"\r\n");
+            dataOutputStream.writeBytes("Content-Type: " + URLConnection.guessContentTypeFromName(filename) + "; charset=utf-8\r\n");
+            dataOutputStream.writeBytes("\r\n");
+            dataOutputStream.write(Files.readAllBytes(file.toPath()));
+            dataOutputStream.writeBytes("\r\n");
+            dataOutputStream.writeBytes("\r\n--" + boundary + "--\r\n");
             dataOutputStream.flush();
             dataOutputStream.close();
 
